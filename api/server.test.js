@@ -40,4 +40,24 @@ describe('[POST] /auth/login', () => {
     const res = await request(server).post('/api/auth/login').send(newUser)
     expect(res.status).toBe(200)
   })
+  it('responds with token successful', async () => {
+    await request(server).post('/api/auth/register').send(newUser)
+    const res = await request(server).post('/api/auth/login').send(newUser)
+    expect(res.body.token).toBeDefined()
+  })
+})
+
+describe('[GET] /api/jokes', () => {
+  it('returns status 200 if everythings cool', async () => {
+    await request(server).post('/api/auth/register').send(newUser)
+    const res = await request(server).post('/api/auth/login').send(newUser)
+    const jokesRes = await request(server).get('/api/jokes').set('Authorization', res.body.token)
+    expect(jokesRes.status).toBe(200)
+  })
+  it('returns a list of jokes', async () => {
+    await request(server).post('/api/auth/register').send(newUser)
+    const res = await request(server).post('/api/auth/login').send(newUser)
+    const jokesRes = await request(server).get('/api/jokes').set('Authorization', res.body.token)
+    expect(jokesRes.body).toHaveLength(3)
+  })
 })
